@@ -1,0 +1,218 @@
+{
+    "topics": [
+        {
+            "id": 1,
+            "name": "My classroom",
+            "words": [
+                {
+                    "en": "window",
+                    "ua": "вікно"
+                },
+                {
+                    "en": "door",
+                    "ua": "двері"
+                },
+                {
+                    "en": "pencil",
+                    "ua": "олівець"
+                },
+                {
+                    "en": "chair",
+                    "ua": "стілець"
+                },
+                {
+                    "en": "book",
+                    "ua": "книга"
+                },
+                {
+                    "en": "table",
+                    "ua": "дошка"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "My body",
+            "words": [
+                {
+                    "en": "ears",
+                    "ua": "вуха"
+                },
+                {
+                    "en": "eyes",
+                    "ua": "очі"
+                },
+                {
+                    "en": "arms",
+                    "ua": "руки"
+                },
+                {
+                    "en": "mouth",
+                    "ua": "рот"
+                },
+                {
+                    "en": "nose",
+                    "ua": "ніс"
+                },
+                {
+                    "en": "head",
+                    "ua": "голова"
+                },
+                {
+                    "en": "legs",
+                    "ua": "ноги"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "My family",
+            "words": [
+                {
+                    "en": "mum",
+                    "ua": "мама"
+                },
+                {
+                    "en": "dad",
+                    "ua": "тато"
+                },
+                {
+                    "en": "grandpa",
+                    "ua": "дідусь"
+                },
+                {
+                    "en": "grandma",
+                    "ua": "бабуся"
+                },
+                {
+                    "en": "sister",
+                    "ua": "сестра"
+                },
+                {
+                    "en": "brother",
+                    "ua": "брат"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "At the zoo",
+            "words": [
+                {
+                    "en": "parrot",
+                    "ua": "папуга"
+                },
+                {
+                    "en": "fish",
+                    "ua": "риба"
+                },
+                {
+                    "en": "zebra",
+                    "ua": "зебра"
+                },
+                {
+                    "en": "lion",
+                    "ua": "лев"
+                },
+                {
+                    "en": "big",
+                    "ua": "великий"
+                },
+                {
+                    "en": "small",
+                    "ua": "маленький"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "My food",
+            "words": [
+                {
+                    "en": "milk",
+                    "ua": "молоко"
+                },
+                {
+                    "en": "oranges",
+                    "ua": "апельсини"
+                },
+                {
+                    "en": "cakes",
+                    "ua": "торти"
+                },
+                {
+                    "en": "tomatoes",
+                    "ua": "помідори"
+                },
+                {
+                    "en": "chocolate",
+                    "ua": "шоколад"
+                },
+                {
+                    "en": "pear",
+                    "ua": "груша"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "name": "My town",
+            "words": [
+                {
+                    "en": "bus stop",
+                    "ua": "зупинка автобуса"
+                },
+                {
+                    "en": "cinema",
+                    "ua": "кінотеатр"
+                },
+                {
+                    "en": "toy shop",
+                    "ua": "магазин іграшок"
+                },
+                {
+                    "en": "school",
+                    "ua": "школа"
+                },
+                {
+                    "en": "hospital",
+                    "ua": "лікарня"
+                },
+                {
+                    "en": "park",
+                    "ua": "парк"
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "name": "Jobs",
+            "words": [
+                {
+                    "en": "teacher",
+                    "ua": "вчитель"
+                },
+                {
+                    "en": "firefighter",
+                    "ua": "пожежник"
+                },
+                {
+                    "en": "gardener",
+                    "ua": "садівник"
+                },
+                {
+                    "en": "police officer",
+                    "ua": "поліцейський"
+                },
+                {
+                    "en": "vet",
+                    "ua": "ветеринар"
+                },
+                {
+                    "en": "doctor",
+                    "ua": "лікар"
+                }
+            ]
+        }
+    ]
+}

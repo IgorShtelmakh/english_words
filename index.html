@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Learning Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="login-screen" class="screen">
+        <div class="login-container">
+            <h2>Welcome to Word Learning Game</h2>
+            <input type="text" id="player-name" placeholder="Enter your name">
+            <button id="start-game">Start Game</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen hidden">
+        <div class="top-bar">
+            <div class="player-info">
+                <span id="player-info" class="player-name"></span>
+            </div>
+            <button id="menu-toggle" class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <div class="main-container">
+            <div class="topics-panel">
+                <div class="topics-header">
+                    <h3>Topics</h3>
+                    <button id="reset-progress" class="reset-button">Reset Progress</button>
+                </div>
+                <div id="topics-list"></div>
+            </div>
+            
+            <div class="game-panel">
+                <div id="translation" class="translation"></div>
+                <div id="drop-zones" class="drop-zones"></div>
+                <div id="letter-cards" class="letter-cards"></div>
+                <button id="check-word" class="hidden">Check Word</button>
+                <div id="result-message"></div>
+                <img id="error-gif" class="hidden" src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWticmFxdm5kdGo2b2JmMWx5OGJtN290YjBpOXJ5aWhqdXV3bXQ5eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/eFAU5DqwnsHEkuIiAk/giphy.gif" alt="Error">
+                <img id="success-gif" class="hidden" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHUxdTA3dm80eWY2dTB2bzA0cWw2Z2Y3YjN1Zm04emFoNTZxY2h6ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OpOS90qsqgXQAwqnPF/giphy.gif" alt="Success">
+                <img id="completion-gif" class="hidden" src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2d2czVoNDVzb2FiYjA5dTA3ZmZidjQ3dGE3MnBwdnp4d2I5MTV2aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1apIRVGEJhpyyAeRzk/giphy.gif" alt="Topic Completed">
+                <audio id="success-sound" src="media/sounds/success.mp3"></audio>
+                <audio id="fail-sound" src="media/sounds/epic_fail.mp3"></audio>
+                <audio id="completion-sound" src="media/sounds/tung.mp3"></audio>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html> 
