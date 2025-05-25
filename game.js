@@ -98,8 +98,10 @@ async function loadTopics() {
         const data = await response.json();
         gameState.topics = data.topics;
         renderTopics();
+        return Promise.resolve();
     } catch (error) {
         console.error('Error loading topics:', error);
+        return Promise.reject(error);
     }
 }
 
@@ -127,7 +129,12 @@ function handleLogin() {
         // Save player data
         savePlayerData();
         
-        loadTopics();
+        // Load topics and select first one by default
+        loadTopics().then(() => {
+            if (gameState.topics.length > 0 && !gameState.currentTopic) {
+                selectTopic(gameState.topics[0]);
+            }
+        });
     }
 }
 
@@ -459,18 +466,36 @@ function checkWord() {
             // Play completion sound
             completionSound.currentTime = 0;
             completionSound.play();
+            
+            // Immediately show completion state
+            // Clear game area
+            document.getElementById('drop-zones').innerHTML = '';
+            document.getElementById('letter-cards').innerHTML = '';
+            document.getElementById('result-message').textContent = '';
+            document.getElementById('check-word').classList.add('hidden');
+            
+            // Hide other GIFs
+            document.getElementById('error-gif').classList.add('hidden');
+            document.getElementById('success-gif').classList.add('hidden');
+            
+            // Show completion message and GIF
+            document.getElementById('translation').textContent = 'All done here!';
+            document.getElementById('completion-gif').classList.remove('hidden');
+            
+            // Save progress and update UI
+            savePlayerData();
+            renderTopics();
+        } else {
+            // Save progress
+            savePlayerData();
+            renderTopics();
+            
+            // Start new word after a delay
+            setTimeout(() => {
+                successGif.classList.add('hidden');
+                startNewWord();
+            }, 2000);
         }
-        
-        // Save progress
-        savePlayerData();
-        
-        renderTopics();
-        
-        // Start new word after a delay
-        setTimeout(() => {
-            successGif.classList.add('hidden');
-            startNewWord();
-        }, 2000);
     } else {
         resultMessage.textContent = `Incorrect. The correct word is: ${gameState.currentWord.en}`;
         resultMessage.style.color = 'red';
