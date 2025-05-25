@@ -12,9 +12,6 @@ body {
 .screen {
     width: 100%;
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .hidden {
@@ -73,8 +70,7 @@ body {
 
 .player-name {
     font-size: 1.2rem;
-    color: #4CAF50;
-    margin-right: 10px;
+    color: #0d6efd;
 }
 
 .menu-toggle {
@@ -85,6 +81,7 @@ body {
     border: none;
     cursor: pointer;
     padding: 5px;
+    z-index: 1000;
 }
 
 .menu-toggle span {
@@ -137,12 +134,15 @@ body {
     color: #333;
     text-align: center;
     margin-bottom: 20px;
+    font-weight: bold;
 }
 
 .drop-zones {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .drop-zone {
@@ -154,10 +154,13 @@ body {
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    background-color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
 .drop-zone:hover {
-    border-color: #4CAF50;
+    border-color: #0d6efd;
 }
 
 .letter-cards {
@@ -165,12 +168,14 @@ body {
     gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .letter-card {
     width: 50px;
     height: 50px;
-    background: #4CAF50;
+    background: #0d6efd;
     color: white;
     border-radius: 5px;
     display: flex;
@@ -179,6 +184,11 @@ body {
     cursor: move;
     font-size: 1.5rem;
     user-select: none;
+    transition: transform 0.2s ease;
+}
+
+.letter-card:hover {
+    transform: translateY(-2px);
 }
 
 .letter-card.dragging {
@@ -214,24 +224,25 @@ body {
 }
 
 .topic-item.completed {
-    background: #d4edda;
-    color: #155724;
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.topic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
 .topic-name {
     font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.topic-progress {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
 }
 
 .progress-text {
     font-size: 0.9rem;
     color: #666;
+    font-weight: 500;
 }
 
 .progress-bar {
@@ -244,12 +255,8 @@ body {
 
 .progress-fill {
     height: 100%;
-    background: #4CAF50;
+    background: #0d6efd;
     transition: width 0.3s ease;
-}
-
-.topic-item.completed .progress-fill {
-    background: #28a745;
 }
 
 .reset-button {
@@ -274,68 +281,64 @@ body {
 
 /* Mobile styles */
 @media (max-width: 768px) {
-    .menu-toggle {
-        display: flex;
+    .letter-card, .drop-zone {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
     }
 
-    .topics-panel {
-        position: fixed;
-        left: 0;
-        top: 60px;
-        bottom: 0;
-        z-index: 999;
-        transform: translateX(-100%);
+    .translation {
+        font-size: 1.2rem;
     }
 
-    .topics-panel.active {
-        transform: translateX(0);
+    .offcanvas {
+        max-width: 300px;
     }
 
-    .game-panel {
-        width: 100%;
-        min-width: unset;
-        margin-left: 0;
+    .player-name {
+        font-size: 1rem;
     }
 
-    .menu-toggle.active span:nth-child(1) {
-        transform: rotate(45deg) translate(8px, 8px);
+    .topic-header {
+        margin-bottom: 6px;
     }
-
-    .menu-toggle.active span:nth-child(2) {
-        opacity: 0;
-    }
-
-    .menu-toggle.active span:nth-child(3) {
-        transform: rotate(-45deg) translate(7px, -7px);
+    
+    .progress-text {
+        font-size: 0.85rem;
     }
 }
 
-#error-gif, #success-gif {
+/* Animation for GIFs */
+#error-gif, #success-gif, #completion-gif {
     max-width: 200px;
-    margin: 20px auto;
+    margin: 1rem auto;
     display: block;
-    border-radius: 10px;
 }
 
-#error-gif.hidden, #success-gif.hidden {
-    display: none;
+/* Custom scrollbar for topics list */
+#topics-list, #topics-list-desktop {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #0d6efd #f8f9fa;
+}
+
+#topics-list::-webkit-scrollbar,
+#topics-list-desktop::-webkit-scrollbar {
+    width: 6px;
+}
+
+#topics-list::-webkit-scrollbar-track,
+#topics-list-desktop::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+#topics-list::-webkit-scrollbar-thumb,
+#topics-list-desktop::-webkit-scrollbar-thumb {
+    background-color: #0d6efd;
+    border-radius: 3px;
 }
 
 .logout-button {
-    padding: 5px 15px;
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    height: 30px;
-    display: flex;
-    align-items: center;
-}
-
-.logout-button:hover {
-    background-color: #ff0000;
-    transform: translateY(-1px);
+    display: none;
 } 

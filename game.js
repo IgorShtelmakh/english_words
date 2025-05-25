@@ -65,7 +65,13 @@ function loadPlayerData() {
         
         // Update player info display
         const playerInfo = document.getElementById('player-info');
-        playerInfo.innerHTML = `<span class="player-label">Player:</span> <span class="player-name">${gameState.playerName}</span> <button id="logout-button" class="logout-button">Logout</button>`;
+        playerInfo.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <span class="player-label">Player:</span>
+                <span class="player-name">${gameState.playerName}</span>
+                <button id="logout-button" class="btn btn-sm btn-outline-danger">Logout</button>
+            </div>
+        `;
         
         // Add logout event listener
         document.getElementById('logout-button').addEventListener('click', logout);
@@ -97,69 +103,57 @@ async function loadTopics() {
     }
 }
 
+// Function to handle login
+function handleLogin() {
+    const name = document.getElementById('player-name').value.trim();
+    if (name) {
+        gameState.playerName = name;
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        
+        // Update player info display
+        const playerInfo = document.getElementById('player-info');
+        playerInfo.innerHTML = `
+            <div class="d-flex align-items-center gap-2">
+                <span class="player-label">Player:</span>
+                <span class="player-name">${gameState.playerName}</span>
+                <button id="logout-button" class="btn btn-sm btn-outline-danger">Logout</button>
+            </div>
+        `;
+        
+        // Add logout event listener
+        document.getElementById('logout-button').addEventListener('click', logout);
+        
+        // Save player data
+        savePlayerData();
+        
+        loadTopics();
+    }
+}
+
 // Initialize the game
 function initGame() {
     const startButton = document.getElementById('start-game');
     const playerNameInput = document.getElementById('player-name');
     const resetButton = document.getElementById('reset-progress');
-    const menuToggle = document.getElementById('menu-toggle');
-    const topicsPanel = document.querySelector('.topics-panel');
+    const resetButtonDesktop = document.getElementById('reset-progress-desktop');
     
     // Try to load saved player data
     loadPlayerData();
     
-    startButton.addEventListener('click', () => {
-        const name = playerNameInput.value.trim();
-        if (name) {
-            gameState.playerName = name;
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            
-            // Update player info display
-            const playerInfo = document.getElementById('player-info');
-            playerInfo.innerHTML = `
-                <span class="player-label">Player:</span>
-                <span class="player-name">${gameState.playerName}</span>
-                <button id="logout-button" class="logout-button">Logout</button>
-            `;
-            
-            // Add logout event listener
-            document.getElementById('logout-button').addEventListener('click', logout);
-            
-            // Save player data
-            savePlayerData();
-            
-            loadTopics();
+    // Add click event listener to start button
+    startButton.addEventListener('click', handleLogin);
+
+    // Add keypress event listener for Enter key
+    playerNameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleLogin();
         }
     });
 
-    // Add reset progress handler
+    // Add reset progress handlers
     resetButton.addEventListener('click', resetProgress);
-
-    // Mobile menu toggle
-    menuToggle.addEventListener('click', () => {
-        menuToggle.classList.toggle('active');
-        topicsPanel.classList.toggle('active');
-    });
-
-    // Close menu when clicking outside on mobile
-    document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768 && 
-            !topicsPanel.contains(e.target) && 
-            !menuToggle.contains(e.target) && 
-            topicsPanel.classList.contains('active')) {
-            menuToggle.classList.remove('active');
-            topicsPanel.classList.remove('active');
-        }
-    });
-
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-            menuToggle.classList.remove('active');
-            topicsPanel.classList.remove('active');
-        }
-    });
+    resetButtonDesktop.addEventListener('click', resetProgress);
 }
 
 // Initialize topic progress
@@ -175,7 +169,11 @@ function initTopicProgress(topic) {
 // Render topics list
 function renderTopics() {
     const topicsList = document.getElementById('topics-list');
+    const topicsListDesktop = document.getElementById('topics-list-desktop');
+    
+    // Clear both lists
     topicsList.innerHTML = '';
+    topicsListDesktop.innerHTML = '';
     
     gameState.topics.forEach(topic => {
         // Initialize progress for new topics
@@ -187,17 +185,36 @@ function renderTopics() {
         // Create topic content with progress
         const progress = gameState.topicProgress[topic.id];
         topicElement.innerHTML = `
-            <div class="topic-name">${topic.name}</div>
-            <div class="topic-progress">
-                <span class="progress-text">${progress.completed}/${progress.total}</span>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${(progress.completed / progress.total) * 100}%"></div>
-                </div>
+            <div class="topic-header">
+                <div class="topic-name">${topic.name}</div>
+                <div class="progress-text">${progress.completed}/${progress.total}</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${(progress.completed / progress.total) * 100}%"></div>
             </div>
         `;
         
-        topicElement.addEventListener('click', () => selectTopic(topic));
+        // Clone the element for desktop view
+        const topicElementDesktop = topicElement.cloneNode(true);
+        
+        // Add click handlers
+        topicElement.addEventListener('click', () => {
+            selectTopic(topic);
+            // Close offcanvas on mobile after selection
+            if (window.innerWidth <= 768) {
+                const offcanvas = document.getElementById('topicsOffcanvas');
+                const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvas);
+                if (bsOffcanvas) {
+                    bsOffcanvas.hide();
+                }
+            }
+        });
+        
+        topicElementDesktop.addEventListener('click', () => selectTopic(topic));
+        
+        // Add to both lists
         topicsList.appendChild(topicElement);
+        topicsListDesktop.appendChild(topicElementDesktop);
     });
 }
 

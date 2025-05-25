@@ -4,54 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Learning Game</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="login-screen" class="screen">
-        <div class="login-container">
-            <h2>Welcome to Word Learning Game</h2>
-            <input type="text" id="player-name" placeholder="Enter your name">
-            <button id="start-game">Start Game</button>
+        <div class="container">
+            <div class="row justify-content-center align-items-center min-vh-100">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card shadow">
+                        <div class="card-body text-center">
+                            <h2 class="card-title mb-4">Welcome to Word Learning Game</h2>
+                            <input type="text" id="player-name" class="form-control mb-3" placeholder="Enter your name">
+                            <button id="start-game" class="btn btn-primary w-100">Start Game</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="game-screen" class="screen hidden">
-        <div class="top-bar">
-            <div class="player-info">
-                <span id="player-info" class="player-name"></span>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <div class="container-fluid">
+                <span id="player-info" class="navbar-text"></span>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#topicsOffcanvas" aria-controls="topicsOffcanvas">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
             </div>
-            <button id="menu-toggle" class="menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-        
-        <div class="main-container">
-            <div class="topics-panel">
-                <div class="topics-header">
-                    <h3>Topics</h3>
-                    <button id="reset-progress" class="reset-button">Reset Progress</button>
-                </div>
+        </nav>
+
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="topicsOffcanvas" aria-labelledby="topicsOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="topicsOffcanvasLabel">Topics</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <button id="reset-progress" class="btn btn-outline-danger mb-3 w-100">Reset Progress</button>
                 <div id="topics-list"></div>
             </div>
-            
-            <div class="game-panel">
-                <div id="translation" class="translation"></div>
-                <div id="drop-zones" class="drop-zones"></div>
-                <div id="letter-cards" class="letter-cards"></div>
-                <button id="check-word" class="hidden">Check Word</button>
-                <div id="result-message"></div>
-                <img id="error-gif" class="hidden" src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWticmFxdm5kdGo2b2JmMWx5OGJtN290YjBpOXJ5aWhqdXV3bXQ5eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/eFAU5DqwnsHEkuIiAk/giphy.gif" alt="Error">
-                <img id="success-gif" class="hidden" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHUxdTA3dm80eWY2dTB2bzA0cWw2Z2Y3YjN1Zm04emFoNTZxY2h6ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OpOS90qsqgXQAwqnPF/giphy.gif" alt="Success">
-                <img id="completion-gif" class="hidden" src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2d2czVoNDVzb2FiYjA5dTA3ZmZidjQ3dGE3MnBwdnp4d2I5MTV2aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1apIRVGEJhpyyAeRzk/giphy.gif" alt="Topic Completed">
-                <audio id="success-sound" src="media/sounds/success.mp3"></audio>
-                <audio id="fail-sound" src="media/sounds/epic_fail.mp3"></audio>
-                <audio id="completion-sound" src="media/sounds/tung.mp3"></audio>
+        </div>
+        
+        <div class="container-fluid mt-5 pt-4">
+            <div class="row">
+                <div class="col-12 col-lg-3 d-none d-lg-block">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h3 class="h5 mb-0">Topics</h3>
+                            <button id="reset-progress-desktop" class="btn btn-sm btn-outline-danger">Reset Progress</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="topics-list-desktop"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-lg-9">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div id="translation" class="translation mb-4"></div>
+                            <div id="drop-zones" class="drop-zones mb-4"></div>
+                            <div id="letter-cards" class="letter-cards mb-4"></div>
+                            <button id="check-word" class="btn btn-primary hidden">Check Word</button>
+                            <div id="result-message" class="mt-3"></div>
+                            <div class="mt-3">
+                                <img id="error-gif" class="hidden img-fluid" src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWticmFxdm5kdGo2b2JmMWx5OGJtN290YjBpOXJ5aWhqdXV3bXQ5eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/eFAU5DqwnsHEkuIiAk/giphy.gif" alt="Error">
+                                <img id="success-gif" class="hidden img-fluid" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHUxdTA3dm80eWY2dTB2bzA0cWw2Z2Y3YjN1Zm04emFoNTZxY2h6ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OpOS90qsqgXQAwqnPF/giphy.gif" alt="Success">
+                                <img id="completion-gif" class="hidden img-fluid" src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2d2czVoNDVzb2FiYjA5dTA3ZmZidjQ3dGE3MnBwdnp4d2I5MTV2aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1apIRVGEJhpyyAeRzk/giphy.gif" alt="Topic Completed">
+                            </div>
+                            <audio id="success-sound" src="media/sounds/success.mp3"></audio>
+                            <audio id="fail-sound" src="media/sounds/epic_fail.mp3"></audio>
+                            <audio id="completion-sound" src="media/sounds/tung.mp3"></audio>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="game.js"></script>
 </body>
 </html> 
