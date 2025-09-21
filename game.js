@@ -3,6 +3,8 @@ let gameState = {
     playerName: '',
     currentTopic: null,
     currentWord: null,
+    currentGroup: null,
+    currentLesson: null,
     completedTopics: new Set(),
     topics: [],
     topicProgress: {}, // Store progress for each topic
@@ -484,11 +486,11 @@ function checkWord() {
             
             // Save progress and update UI
             savePlayerData();
-            renderTopics();
+            renderAccordion();
         } else {
             // Save progress
             savePlayerData();
-            renderTopics();
+            renderAccordion();
             
             // Start new word after a delay
             setTimeout(() => {
@@ -540,12 +542,17 @@ function renderAccordion() {
     groupHeader.className = 'accordion-header';
     groupHeader.id = `groupHeading${groupIdx}`;
 
+    // Check if this group contains the current lesson
+    const isCurrentGroup = gameState.currentGroup && gameState.currentGroup.name === group.name;
+    const isExpanded = isCurrentGroup ? 'true' : 'false';
+    const buttonClass = isCurrentGroup ? 'accordion-button' : 'accordion-button collapsed';
+    
     const groupBtn = document.createElement('button');
-    groupBtn.className = 'accordion-button collapsed';
+    groupBtn.className = buttonClass;
     groupBtn.type = 'button';
     groupBtn.setAttribute('data-bs-toggle', 'collapse');
     groupBtn.setAttribute('data-bs-target', `#groupCollapseMobile${groupIdx}`);
-    groupBtn.setAttribute('aria-expanded', 'false');
+    groupBtn.setAttribute('aria-expanded', isExpanded);
     groupBtn.setAttribute('aria-controls', `groupCollapseMobile${groupIdx}`);
     groupBtn.textContent = group.name;
     groupHeader.appendChild(groupBtn);
@@ -558,7 +565,7 @@ function renderAccordion() {
     // Accordion body
     const groupBody = document.createElement('div');
     groupBody.id = `groupCollapseMobile${groupIdx}`;
-    groupBody.className = 'accordion-collapse collapse';
+    groupBody.className = isCurrentGroup ? 'accordion-collapse collapse show' : 'accordion-collapse collapse';
     groupBody.setAttribute('aria-labelledby', `groupHeading${groupIdx}`);
     groupBody.setAttribute('data-bs-parent', '#groupsAccordionMobile');
     const groupBodyDesktop = groupBody.cloneNode(true);
@@ -575,9 +582,31 @@ function renderAccordion() {
       .then(res => res.json())
       .then(data => {
         (data.lessons || []).forEach(lesson => {
+          // Initialize progress for this lesson
+          if (!gameState.topicProgress[lesson.id]) {
+            gameState.topicProgress[lesson.id] = {
+              total: group.type === 'english' ? lesson.words.length : lesson.tasks.length,
+              completed: 0
+            };
+          }
+          
+          const progress = gameState.topicProgress[lesson.id];
+          const isSelected = gameState.currentLesson && gameState.currentLesson.id === lesson.id;
+          const isCompleted = progress.completed === progress.total;
+          
           const lessonItem = document.createElement('button');
-          lessonItem.className = 'list-group-item list-group-item-action';
-          lessonItem.textContent = lesson.name;
+          lessonItem.className = `list-group-item list-group-item-action ${isSelected ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
+          
+          lessonItem.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+              <span>${lesson.name}</span>
+              <small class="text-muted">${progress.completed}/${progress.total}</small>
+            </div>
+            <div class="progress mt-1" style="height: 4px;">
+              <div class="progress-bar" style="width: ${(progress.completed / progress.total) * 100}%"></div>
+            </div>
+          `;
+          
           lessonItem.onclick = () => selectLesson(group, lesson);
           lessonsList.appendChild(lessonItem);
 
@@ -609,6 +638,10 @@ function renderAccordion() {
 function selectLesson(group, lesson) {
   gameState.currentGroup = group;
   gameState.currentLesson = lesson;
+  
+  // Update UI to show selected lesson
+  renderAccordion();
+  
   if (group.type === 'english') {
     // Use your existing logic for English lessons
     gameState.currentTopic = lesson;
@@ -616,7 +649,7 @@ function selectLesson(group, lesson) {
     document.getElementById('completion-gif').classList.add('hidden');
     startNewWord();
   } else if (group.type === 'math') {
-    // Render math game (to be implemented)
+    // Render math game
     renderMathGame(lesson);
   }
 }
@@ -708,6 +741,12 @@ function renderMathGame(lesson) {
         state.correct++;
         // Disable all cards
         cardsRow.querySelectorAll('button').forEach(btn => btn.disabled = true);
+        
+        // Update progress
+        gameState.topicProgress[lesson.id].completed++;
+        savePlayerData();
+        renderAccordion();
+        
         setTimeout(() => {
           document.getElementById('success-gif').classList.add('hidden');
           state.current++;

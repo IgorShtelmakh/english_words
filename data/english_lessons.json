@@ -100,6 +100,18 @@
         { "en": "crayon", "ua": "кольоровий олівець" },
         { "en": "floor", "ua": "підлога" }
       ]
+    },
+    {
+      "id": 9,
+      "name": "Commands",
+      "words": [
+        { "en": "sit down", "ua": "сядь" },
+        { "en": "open your book", "ua": "відкрий книгу" },
+        { "en": "don't sit down", "ua": "не сядь" },
+        { "en": "don't stand up", "ua": "не вставай" },
+        { "en": "don't open your book", "ua": "не відкривай книгу" },
+        { "en": "stand up", "ua": "встань" }
+      ]
     }
   ]
 } 

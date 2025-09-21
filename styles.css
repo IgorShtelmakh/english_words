@@ -341,4 +341,38 @@ body {
 
 .logout-button {
     display: none;
+}
+
+/* Lesson item styles */
+.list-group-item.completed {
+    background-color: #d4edda !important;
+    border-color: #c3e6cb !important;
+    color: #155724 !important;
+}
+
+.list-group-item.active {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: white !important;
+}
+
+.list-group-item.active .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.list-group-item .progress {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.list-group-item.active .progress {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.list-group-item .progress-bar {
+    background-color: #28a745;
+    transition: width 0.3s ease;
+}
+
+.list-group-item.completed .progress-bar {
+    background-color: #155724;
 } 
