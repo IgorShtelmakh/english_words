@@ -45,7 +45,9 @@
             </div>
             <div class="offcanvas-body">
                 <button id="reset-progress" class="btn btn-outline-danger mb-3 w-100">Reset Progress</button>
-                <div id="topics-list"></div>
+                <div class="accordion" id="groupsAccordionMobile">
+                    <!-- JS will render groups/lessons here -->
+                </div>
             </div>
         </div>
         
@@ -54,11 +56,13 @@
                 <div class="col-12 col-lg-3 d-none d-lg-block">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h3 class="h5 mb-0">Topics</h3>
+                            <h3 class="h5 mb-0">Lessons</h3>
                             <button id="reset-progress-desktop" class="btn btn-sm btn-outline-danger">Reset Progress</button>
                         </div>
-                        <div class="card-body">
-                            <div id="topics-list-desktop"></div>
+                        <div class="card-body p-0">
+                            <div class="accordion" id="groupsAccordionDesktop">
+                                <!-- JS will render groups/lessons here -->
+                            </div>
                         </div>
                     </div>
                 </div>

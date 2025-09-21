@@ -519,8 +519,226 @@ function checkWord() {
     }
 }
 
-// Initialize the game when the page loads
+// --- GROUPS CONFIG ---
+const GROUPS = [
+  { name: 'English', file: 'data/english_lessons.json', type: 'english' },
+  { name: 'Math', file: 'data/math_lessons.json', type: 'math' }
+];
+
+// --- UI: Render Accordion ---
+function renderAccordion() {
+  const groupsAccordionMobile = document.getElementById('groupsAccordionMobile');
+  const groupsAccordionDesktop = document.getElementById('groupsAccordionDesktop');
+  if (!groupsAccordionMobile || !groupsAccordionDesktop) return;
+
+  groupsAccordionMobile.innerHTML = '';
+  groupsAccordionDesktop.innerHTML = '';
+
+  GROUPS.forEach((group, groupIdx) => {
+    // Accordion header
+    const groupHeader = document.createElement('h2');
+    groupHeader.className = 'accordion-header';
+    groupHeader.id = `groupHeading${groupIdx}`;
+
+    const groupBtn = document.createElement('button');
+    groupBtn.className = 'accordion-button collapsed';
+    groupBtn.type = 'button';
+    groupBtn.setAttribute('data-bs-toggle', 'collapse');
+    groupBtn.setAttribute('data-bs-target', `#groupCollapseMobile${groupIdx}`);
+    groupBtn.setAttribute('aria-expanded', 'false');
+    groupBtn.setAttribute('aria-controls', `groupCollapseMobile${groupIdx}`);
+    groupBtn.textContent = group.name;
+    groupHeader.appendChild(groupBtn);
+
+    const groupHeaderDesktop = groupHeader.cloneNode(true);
+    const groupBtnDesktop = groupHeaderDesktop.querySelector('button');
+    groupBtnDesktop.setAttribute('data-bs-target', `#groupCollapseDesktop${groupIdx}`);
+    groupBtnDesktop.setAttribute('aria-controls', `groupCollapseDesktop${groupIdx}`);
+
+    // Accordion body
+    const groupBody = document.createElement('div');
+    groupBody.id = `groupCollapseMobile${groupIdx}`;
+    groupBody.className = 'accordion-collapse collapse';
+    groupBody.setAttribute('aria-labelledby', `groupHeading${groupIdx}`);
+    groupBody.setAttribute('data-bs-parent', '#groupsAccordionMobile');
+    const groupBodyDesktop = groupBody.cloneNode(true);
+    groupBodyDesktop.id = `groupCollapseDesktop${groupIdx}`;
+    groupBodyDesktop.setAttribute('data-bs-parent', '#groupsAccordionDesktop');
+
+    // Lessons list
+    const lessonsList = document.createElement('div');
+    lessonsList.className = 'list-group';
+    const lessonsListDesktop = lessonsList.cloneNode(true);
+
+    // Load lessons for this group
+    fetch(group.file)
+      .then(res => res.json())
+      .then(data => {
+        (data.lessons || []).forEach(lesson => {
+          const lessonItem = document.createElement('button');
+          lessonItem.className = 'list-group-item list-group-item-action';
+          lessonItem.textContent = lesson.name;
+          lessonItem.onclick = () => selectLesson(group, lesson);
+          lessonsList.appendChild(lessonItem);
+
+          const lessonItemDesktop = lessonItem.cloneNode(true);
+          lessonItemDesktop.onclick = () => selectLesson(group, lesson);
+          lessonsListDesktop.appendChild(lessonItemDesktop);
+        });
+      });
+
+    groupBody.appendChild(lessonsList);
+    groupBodyDesktop.appendChild(lessonsListDesktop);
+
+    // Wrap in accordion item
+    const accordionItem = document.createElement('div');
+    accordionItem.className = 'accordion-item';
+    accordionItem.appendChild(groupHeader);
+    accordionItem.appendChild(groupBody);
+    groupsAccordionMobile.appendChild(accordionItem);
+
+    const accordionItemDesktop = document.createElement('div');
+    accordionItemDesktop.className = 'accordion-item';
+    accordionItemDesktop.appendChild(groupHeaderDesktop);
+    accordionItemDesktop.appendChild(groupBodyDesktop);
+    groupsAccordionDesktop.appendChild(accordionItemDesktop);
+  });
+}
+
+// --- Select Lesson Handler ---
+function selectLesson(group, lesson) {
+  gameState.currentGroup = group;
+  gameState.currentLesson = lesson;
+  if (group.type === 'english') {
+    // Use your existing logic for English lessons
+    gameState.currentTopic = lesson;
+    gameState.completedWords.clear();
+    document.getElementById('completion-gif').classList.add('hidden');
+    startNewWord();
+  } else if (group.type === 'math') {
+    // Render math game (to be implemented)
+    renderMathGame(lesson);
+  }
+}
+
+// --- Render Math Game (Stub) ---
+function renderMathGame(lesson) {
+  // Clear game area
+  document.getElementById('translation').textContent = '';
+  document.getElementById('drop-zones').innerHTML = '';
+  document.getElementById('letter-cards').innerHTML = '';
+  document.getElementById('result-message').textContent = '';
+  document.getElementById('check-word').classList.add('hidden');
+  document.getElementById('error-gif').classList.add('hidden');
+  document.getElementById('success-gif').classList.add('hidden');
+  document.getElementById('completion-gif').classList.add('hidden');
+
+  // Math quiz state
+  if (!lesson._mathState) {
+    lesson._mathState = { current: 0, correct: 0 };
+  }
+  const state = lesson._mathState;
+  const tasks = lesson.tasks;
+
+  // If all tasks are done
+  if (state.current >= tasks.length) {
+    document.getElementById('translation').textContent = 'All done!';
+    document.getElementById('result-message').textContent = `You answered ${state.correct} out of ${tasks.length} correctly!`;
+    document.getElementById('completion-gif').classList.remove('hidden');
+    const completionSound = document.getElementById('completion-sound');
+    if (completionSound) {
+      completionSound.currentTime = 0;
+      completionSound.play();
+    }
+    // Add Start Again button
+    const dropZones = document.getElementById('drop-zones');
+    dropZones.innerHTML = '';
+    const againBtn = document.createElement('button');
+    againBtn.className = 'btn btn-primary mt-3';
+    againBtn.textContent = 'Start Again';
+    againBtn.onclick = () => {
+      lesson._mathState = { current: 0, correct: 0 };
+      renderMathGame(lesson);
+    };
+    dropZones.appendChild(againBtn);
+    return;
+  }
+
+  // Show current task
+  const task = tasks[state.current];
+  document.getElementById('translation').textContent = `${task.a} × ${task.b} = ?`;
+
+  // Generate 6 answer options (1 correct, 5 unique wrong)
+  const correct = task.a * task.b;
+  const options = new Set([correct]);
+  while (options.size < 6) {
+    // Generate plausible wrong answers
+    let wrong = correct + Math.floor(Math.random() * 11) - 5; // +/-5
+    if (wrong === correct || wrong < 0) wrong = correct + Math.floor(Math.random() * 10) + 1;
+    options.add(wrong);
+  }
+  const shuffled = Array.from(options);
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  // Show answer cards
+  const dropZones = document.getElementById('drop-zones');
+  dropZones.innerHTML = '';
+  const cardsRow = document.createElement('div');
+  cardsRow.className = 'd-flex flex-wrap justify-content-center gap-3';
+  shuffled.forEach(option => {
+    const card = document.createElement('button');
+    card.className = 'btn btn-outline-primary fs-4 py-3 px-4 answer-card';
+    card.textContent = option;
+    card.disabled = false;
+    card.onclick = () => {
+      if (option === correct) {
+        card.classList.remove('btn-outline-primary');
+        card.classList.add('btn-success');
+        document.getElementById('result-message').textContent = 'Correct!';
+        document.getElementById('result-message').style.color = 'green';
+        document.getElementById('success-gif').classList.remove('hidden');
+        const successSound = document.getElementById('success-sound');
+        if (successSound) {
+          successSound.currentTime = 0;
+          successSound.play();
+        }
+        state.correct++;
+        // Disable all cards
+        cardsRow.querySelectorAll('button').forEach(btn => btn.disabled = true);
+        setTimeout(() => {
+          document.getElementById('success-gif').classList.add('hidden');
+          state.current++;
+          renderMathGame(lesson);
+        }, 1500);
+      } else {
+        card.classList.remove('btn-outline-primary');
+        card.classList.add('btn-danger');
+        card.disabled = true;
+        document.getElementById('result-message').textContent = 'Try again!';
+        document.getElementById('result-message').style.color = 'red';
+        document.getElementById('error-gif').classList.remove('hidden');
+        const failSound = document.getElementById('fail-sound');
+        if (failSound) {
+          failSound.currentTime = 0;
+          failSound.play();
+        }
+        setTimeout(() => {
+          document.getElementById('error-gif').classList.add('hidden');
+        }, 1000);
+      }
+    };
+    cardsRow.appendChild(card);
+  });
+  dropZones.appendChild(cardsRow);
+  document.getElementById('result-message').textContent = '';
+}
+
+// --- On page load, render accordion ---
 document.addEventListener('DOMContentLoaded', () => {
-    initGame();
-    document.getElementById('check-word').addEventListener('click', checkWord);
+  renderAccordion();
+  initGame();
+  document.getElementById('check-word').addEventListener('click', checkWord);
 }); 
