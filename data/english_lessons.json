@@ -112,6 +112,20 @@
         { "en": "don't open your book", "ua": "не відкривай книгу" },
         { "en": "stand up", "ua": "встань" }
       ]
+    },
+    {
+      "id": 10,
+      "name": "My day",
+      "words": [
+        { "en": "have breakfast", "ua": "снідати" },
+        { "en": "get up", "ua": "вставати" },
+        { "en": "get dressed", "ua": "одягатися" },
+        { "en": "brush your teeth", "ua": "чистити зуби" },
+        { "en": "go to school", "ua": "йти до школи" },
+        { "en": "have lunch", "ua": "обідати" },
+        { "en": "have dinner", "ua": "вечеряти" },
+        { "en": "go to bed", "ua": "лягати спати" }
+      ]
     }
   ]
 } 
