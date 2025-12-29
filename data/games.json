@@ -1,0 +1,22 @@
+{
+  "lessons": [
+    {
+      "id": "tictactoe",
+      "name": "Tic Tac Toe",
+      "description": "Classic game for two players",
+      "file": "games/tictactoe.html"
+    },
+    {
+      "id": "minesweeper",
+      "name": "Minesweeper",
+      "description": "Find all the mines without clicking on them",
+      "file": "games/minesweeper.html"
+    },
+    {
+      "id": "checkers",
+      "name": "Checkers",
+      "description": "Play checkers against the computer",
+      "file": "games/checkers.html"
+    }
+  ]
+}

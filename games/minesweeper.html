@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #333;
+            border-radius: 10px;
+            color: #ff0000;
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .board {
+            display: inline-grid;
+            gap: 2px;
+            background: #999;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: #c0c0c0;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 3px solid #fff;
+            border-left: 3px solid #fff;
+            border-bottom: 3px solid #808080;
+            border-right: 3px solid #808080;
+        }
+        .cell:active:not(.revealed):not(.flagged) {
+            border: 1px solid #808080;
+        }
+        .cell.revealed {
+            background: #d0d0d0;
+            border: 1px solid #999;
+        }
+        .cell.mine {
+            background: #ff0000;
+        }
+        .cell.flagged::after {
+            content: '🚩';
+        }
+        .cell.question::after {
+            content: '?';
+            color: #333;
+        }
+        .n1 { color: #0000ff; }
+        .n2 { color: #008000; }
+        .n3 { color: #ff0000; }
+        .n4 { color: #000080; }
+        .n5 { color: #800000; }
+        .n6 { color: #008080; }
+        .n7 { color: #000000; }
+        .n8 { color: #808080; }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .difficulty-btn.active {
+            background: #333;
+            color: white;
+        }
+        .status-message {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 40px;
+        }
+        .win { color: #27ae60; }
+        .lose { color: #e74c3c; }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+        }
+        .board-container {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="btn btn-light back-btn">Back to Menu</a>
+
+    <div class="game-container">
+        <h1 class="text-center mb-4">Minesweeper</h1>
+
+        <div class="header">
+            <span id="mines-count">010</span>
+            <button class="btn btn-warning" id="new-game">😊</button>
+            <span id="timer">000</span>
+        </div>
+
+        <div class="board-container">
+            <div class="board" id="board"></div>
+        </div>
+
+        <div class="status-message" id="status"></div>
+
+        <div class="controls">
+            <button class="btn btn-outline-secondary difficulty-btn active" data-rows="9" data-cols="9" data-mines="10">Easy</button>
+            <button class="btn btn-outline-secondary difficulty-btn" data-rows="16" data-cols="16" data-mines="40">Medium</button>
+            <button class="btn btn-outline-secondary difficulty-btn" data-rows="16" data-cols="30" data-mines="99">Hard</button>
+        </div>
+
+        <p class="text-center text-muted mt-3">
+            <small>Left click to reveal | Right click to flag</small>
+        </p>
+    </div>
+
+    <script>
+        let rows = 9;
+        let cols = 9;
+        let mines = 10;
+        let board = [];
+        let revealed = [];
+        let flagged = [];
+        let gameOver = false;
+        let firstClick = true;
+        let timer = 0;
+        let timerInterval = null;
+
+        const boardEl = document.getElementById('board');
+        const minesCountEl = document.getElementById('mines-count');
+        const timerEl = document.getElementById('timer');
+        const statusEl = document.getElementById('status');
+        const newGameBtn = document.getElementById('new-game');
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+
+        function initGame() {
+            board = [];
+            revealed = [];
+            flagged = [];
+            gameOver = false;
+            firstClick = true;
+            timer = 0;
+            clearInterval(timerInterval);
+            timerInterval = null;
+
+            timerEl.textContent = '000';
+            minesCountEl.textContent = String(mines).padStart(3, '0');
+            statusEl.textContent = '';
+            statusEl.className = 'status-message';
+            newGameBtn.textContent = '😊';
+
+            boardEl.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
+            boardEl.innerHTML = '';
+
+            for (let r = 0; r < rows; r++) {
+                board[r] = [];
+                revealed[r] = [];
+                flagged[r] = [];
+                for (let c = 0; c < cols; c++) {
+                    board[r][c] = 0;
+                    revealed[r][c] = false;
+                    flagged[r][c] = false;
+
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    cell.addEventListener('click', handleClick);
+                    cell.addEventListener('contextmenu', handleRightClick);
+                    boardEl.appendChild(cell);
+                }
+            }
+        }
+
+        function placeMines(excludeRow, excludeCol) {
+            let placed = 0;
+            while (placed < mines) {
+                const r = Math.floor(Math.random() * rows);
+                const c = Math.floor(Math.random() * cols);
+                if (board[r][c] !== -1 && !(r === excludeRow && c === excludeCol)) {
+                    board[r][c] = -1;
+                    placed++;
+                }
+            }
+
+            // Calculate numbers
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (board[r][c] === -1) continue;
+                    let count = 0;
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            const nr = r + dr;
+                            const nc = c + dc;
+                            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && board[nr][nc] === -1) {
+                                count++;
+                            }
+                        }
+                    }
+                    board[r][c] = count;
+                }
+            }
+        }
+
+        function getCell(r, c) {
+            return boardEl.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+        }
+
+        function reveal(r, c) {
+            if (r < 0 || r >= rows || c < 0 || c >= cols) return;
+            if (revealed[r][c] || flagged[r][c]) return;
+
+            revealed[r][c] = true;
+            const cell = getCell(r, c);
+            cell.classList.add('revealed');
+
+            if (board[r][c] === -1) {
+                cell.textContent = '💣';
+                cell.classList.add('mine');
+                endGame(false);
+                return;
+            }
+
+            if (board[r][c] > 0) {
+                cell.textContent = board[r][c];
+                cell.classList.add(`n${board[r][c]}`);
+            } else {
+                // Reveal neighbors for empty cells
+                for (let dr = -1; dr <= 1; dr++) {
+                    for (let dc = -1; dc <= 1; dc++) {
+                        reveal(r + dr, c + dc);
+                    }
+                }
+            }
+
+            checkWin();
+        }
+
+        function handleClick(e) {
+            if (gameOver) return;
+            const r = parseInt(e.target.dataset.row);
+            const c = parseInt(e.target.dataset.col);
+
+            if (flagged[r][c]) return;
+
+            if (firstClick) {
+                firstClick = false;
+                placeMines(r, c);
+                timerInterval = setInterval(() => {
+                    timer++;
+                    timerEl.textContent = String(Math.min(timer, 999)).padStart(3, '0');
+                }, 1000);
+            }
+
+            reveal(r, c);
+        }
+
+        function handleRightClick(e) {
+            e.preventDefault();
+            if (gameOver) return;
+
+            const r = parseInt(e.target.dataset.row);
+            const c = parseInt(e.target.dataset.col);
+
+            if (revealed[r][c]) return;
+
+            const cell = getCell(r, c);
+            if (flagged[r][c]) {
+                flagged[r][c] = false;
+                cell.classList.remove('flagged');
+            } else {
+                flagged[r][c] = true;
+                cell.classList.add('flagged');
+            }
+
+            updateMinesCount();
+        }
+
+        function updateMinesCount() {
+            let flagCount = 0;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (flagged[r][c]) flagCount++;
+                }
+            }
+            minesCountEl.textContent = String(Math.max(0, mines - flagCount)).padStart(3, '0');
+        }
+
+        function checkWin() {
+            let unrevealedSafe = 0;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (!revealed[r][c] && board[r][c] !== -1) {
+                        unrevealedSafe++;
+                    }
+                }
+            }
+            if (unrevealedSafe === 0) {
+                endGame(true);
+            }
+        }
+
+        function endGame(won) {
+            gameOver = true;
+            clearInterval(timerInterval);
+
+            if (won) {
+                statusEl.textContent = 'You Win! 🎉';
+                statusEl.classList.add('win');
+                newGameBtn.textContent = '😎';
+            } else {
+                statusEl.textContent = 'Game Over! 💥';
+                statusEl.classList.add('lose');
+                newGameBtn.textContent = '😵';
+                // Reveal all mines
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        if (board[r][c] === -1) {
+                            const cell = getCell(r, c);
+                            cell.classList.add('revealed');
+                            cell.textContent = '💣';
+                        }
+                    }
+                }
+            }
+        }
+
+        newGameBtn.addEventListener('click', initGame);
+
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                difficultyBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                rows = parseInt(btn.dataset.rows);
+                cols = parseInt(btn.dataset.cols);
+                mines = parseInt(btn.dataset.mines);
+                initGame();
+            });
+        });
+
+        initGame();
+    </script>
+</body>
+</html>

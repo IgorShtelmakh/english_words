@@ -524,7 +524,8 @@ function checkWord() {
 // --- GROUPS CONFIG ---
 const GROUPS = [
   { name: 'English', file: 'data/english_lessons.json', type: 'english' },
-  { name: 'Math', file: 'data/math_lessons.json', type: 'math' }
+  { name: 'Math', file: 'data/math_lessons.json', type: 'math' },
+  { name: 'Games', file: 'data/games.json', type: 'games' }
 ];
 
 // --- UI: Render Accordion ---
@@ -582,31 +583,43 @@ function renderAccordion() {
       .then(res => res.json())
       .then(data => {
         (data.lessons || []).forEach(lesson => {
-          // Initialize progress for this lesson
-          if (!gameState.topicProgress[lesson.id]) {
-            gameState.topicProgress[lesson.id] = {
-              total: group.type === 'english' ? lesson.words.length : lesson.tasks.length,
-              completed: 0
-            };
-          }
-          
-          const progress = gameState.topicProgress[lesson.id];
-          const isSelected = gameState.currentLesson && gameState.currentLesson.id === lesson.id;
-          const isCompleted = progress.completed === progress.total;
-          
           const lessonItem = document.createElement('button');
-          lessonItem.className = `list-group-item list-group-item-action ${isSelected ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
-          
-          lessonItem.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-              <span>${lesson.name}</span>
-              <small class="text-muted">${progress.completed}/${progress.total}</small>
-            </div>
-            <div class="progress mt-1" style="height: 4px;">
-              <div class="progress-bar" style="width: ${(progress.completed / progress.total) * 100}%"></div>
-            </div>
-          `;
-          
+          const isSelected = gameState.currentLesson && gameState.currentLesson.id === lesson.id;
+
+          // Games don't have progress tracking
+          if (group.type === 'games') {
+            lessonItem.className = `list-group-item list-group-item-action`;
+            lessonItem.innerHTML = `
+              <div class="d-flex justify-content-between align-items-center">
+                <span>${lesson.name}</span>
+                <small class="text-muted">Play</small>
+              </div>
+              <small class="text-muted">${lesson.description || ''}</small>
+            `;
+          } else {
+            // Initialize progress for this lesson
+            if (!gameState.topicProgress[lesson.id]) {
+              gameState.topicProgress[lesson.id] = {
+                total: group.type === 'english' ? lesson.words.length : lesson.tasks.length,
+                completed: 0
+              };
+            }
+
+            const progress = gameState.topicProgress[lesson.id];
+            const isCompleted = progress.completed === progress.total;
+
+            lessonItem.className = `list-group-item list-group-item-action ${isSelected ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
+            lessonItem.innerHTML = `
+              <div class="d-flex justify-content-between align-items-center">
+                <span>${lesson.name}</span>
+                <small class="text-muted">${progress.completed}/${progress.total}</small>
+              </div>
+              <div class="progress mt-1" style="height: 4px;">
+                <div class="progress-bar" style="width: ${(progress.completed / progress.total) * 100}%"></div>
+              </div>
+            `;
+          }
+
           lessonItem.onclick = () => selectLesson(group, lesson);
           lessonsList.appendChild(lessonItem);
 
@@ -638,10 +651,10 @@ function renderAccordion() {
 function selectLesson(group, lesson) {
   gameState.currentGroup = group;
   gameState.currentLesson = lesson;
-  
+
   // Update UI to show selected lesson
   renderAccordion();
-  
+
   if (group.type === 'english') {
     // Use your existing logic for English lessons
     gameState.currentTopic = lesson;
@@ -651,6 +664,9 @@ function selectLesson(group, lesson) {
   } else if (group.type === 'math') {
     // Render math game
     renderMathGame(lesson);
+  } else if (group.type === 'games') {
+    // Open game in new window/tab
+    window.open(lesson.file, '_blank');
   }
 }
 
