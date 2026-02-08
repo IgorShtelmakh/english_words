@@ -126,6 +126,21 @@
         { "en": "have dinner", "ua": "вечеряти" },
         { "en": "go to bed", "ua": "лягати спати" }
       ]
+    },
+    {
+      "id": 11,
+      "name": "My bedroom",
+      "words": [
+        { "en": "poster", "ua": "плакат" },
+        { "en": "wardrobe", "ua": "шафа для одягу" },
+        { "en": "mirror", "ua": "дзеркало" },
+        { "en": "armchair", "ua": "крісло" },
+        { "en": "lamp", "ua": "лампа" },
+        { "en": "bed", "ua": "ліжко" },
+        { "en": "table", "ua": "стіл" },
+        { "en": "sofa", "ua": "диван" },
+        { "en": "rug", "ua": "килимок" }
+      ]
     }
   ]
 } 
